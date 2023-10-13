@@ -1,4 +1,7 @@
 import Header from './Header';
+import InfoTooltip from './InfoTooltip';
+import Register from './Register';
+import Login from './Login';
 import Main from './Main';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
@@ -18,6 +21,8 @@ function App() {
     const [isEditProfilePopupOpen, setEditProfileOpen] = useState(false);
     const [isAddPlacePopupOpen, setAddPlaceOpne] = useState(false);
     const [isEditAvatarPopupOpen, setEditAvatarOpen] = useState(false);
+    const [isOkTooltipOpen, setOkTooltipOpen] = useState(true);
+    const [isErrorTooltipOpen, setErrorTooltipOpen] = useState(true);
     const [selectedCard, setSelectedCard] = useState(null);
 
     useEffect(() => {
@@ -108,6 +113,8 @@ function App() {
         setEditProfileOpen(false)
         setAddPlaceOpne(false)
         setEditAvatarOpen(false)
+        setOkTooltipOpen(false)
+        setErrorTooltipOpen(false)
         setSelectedCard(null)
     }
 
@@ -120,6 +127,24 @@ function App() {
             <CardsContext.Provider value={cards}>
                 <div className="page">
                     <Header />
+                    <InfoTooltip
+                        tooltipStatus={"ok"}
+                        isOpen={isOkTooltipOpen}
+                        onClose={closeAllPopups}
+                    />
+                    <InfoTooltip 
+                        tooltipStatus={"error"}
+                        isOpen={isErrorTooltipOpen}
+                        onClose={closeAllPopups}
+                    />
+                    <Register
+                        authTitle={"Регистрация"}
+                        authButtonText={"Зарегистрироваться"}
+                    />
+                    <Login 
+                        authTitle={"Вход"}
+                        authButtonText={"Войти"}
+                    />
                     <Main
                         onEditProfile={() => setEditProfileOpen(true)}
                         onAddPlace={() => setAddPlaceOpne(true)}

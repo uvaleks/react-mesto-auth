@@ -1,6 +1,6 @@
 :root {
-    --bg: #000;
-    --text: #fff;
-    --title: #000;
-    --border: #545454;
+    --black: #000;
+    --white: #fff;
+    --dark-gray: #545454;
+    --light-gray: #ccc;
 }
