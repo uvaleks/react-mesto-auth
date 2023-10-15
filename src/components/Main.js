@@ -1,15 +1,28 @@
 import Card from './Card';
 import React from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import PopupWithForm from './PopupWithForm';
+import ImagePopup from './ImagePopup';
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
 
 function Main({
     onEditAvatar,
     onEditProfile,
     onAddPlace,
     cards,
+    selectedCard,
     onCardClick,
     onCardLike,
-    onCardDelete
+    onCardDelete,
+    isEditProfilePopupOpen,
+    onUpdateUser,
+    isEditAvatarPopupOpen,
+    onUpdateAvatar,
+    isAddPlacePopupOpen,
+    onAddCard,
+    onClose
   }) {
   
   const currentUser = React.useContext(CurrentUserContext);
@@ -45,6 +58,30 @@ function Main({
             />
           ))}
         </section>
+          <EditProfilePopup
+              isOpen={isEditProfilePopupOpen}
+              onClose={onClose} 
+              onUpdateUser={onUpdateUser}
+          />
+          <EditAvatarPopup
+              isOpen={isEditAvatarPopupOpen}
+              onClose={onClose} 
+              onUpdateAvatar={onUpdateAvatar}
+          />
+          <AddPlacePopup
+              isOpen={isAddPlacePopupOpen}
+              onClose={onClose} 
+              onAddCard={onAddCard}
+          />
+          <PopupWithForm
+              popupName={'confirm-delete'}
+              title={"Вы уверены?"}
+              buttonText={"Да"}
+          />
+          <ImagePopup
+              card={selectedCard}
+              onClose={onClose}
+          />
     </main>
   );
 }
