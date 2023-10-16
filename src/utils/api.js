@@ -11,13 +11,17 @@ class Api {
         return Promise.reject(`Ошибка ${res.status}`);
     }
 
-    getCards() {
-        return fetch(`${this._baseUrl}/cards`, {headers: this._headers})
+    _request(url, options) {
+        return fetch(this._baseUrl + url, options)
         .then(this._checkResponse)
     }
 
+    getCards() {
+        return this._request('/cards', {headers: this._headers})
+    }
+
     postCard({name, link}) {
-        return fetch(`${this._baseUrl}/cards`, {
+        return this._request('/cards', {
             method: 'POST',
             headers: {
                 authorization: this._headers.authorization,
@@ -28,11 +32,10 @@ class Api {
                 link: link
             })
         })
-        .then(this._checkResponse)
     }
 
     patchAvatar(link) {
-        return fetch(`${this._baseUrl}/users/me/avatar`, {
+        return this._request('/users/me/avatar', {
             method: 'PATCH',
             headers: {
                 authorization: this._headers.authorization,
@@ -42,49 +45,44 @@ class Api {
                 avatar: link
             })
         })
-        .then(this._checkResponse)
     }
 
     changeLikeCardStatus(id, isLiked) {
         if (isLiked) {
-            return fetch(`${this._baseUrl}/cards/${id}/likes`, {
+            return this._request(`/cards/${id}/likes`, {
                 method: 'PUT',
                 headers: {
                     authorization: this._headers.authorization,
                     'Content-Type': 'application/json'
                 }
             })
-            .then(this._checkResponse)
         } else {
-            return fetch(`${this._baseUrl}/cards/${id}/likes`, {
+            return this._request(`/cards/${id}/likes`, {
                 method: 'DELETE',
                 headers: {
                     authorization: this._headers.authorization,
                     'Content-Type': 'application/json'
                 }
             })
-            .then(this._checkResponse)
         }
     }
 
     deleteCard(id) {
-        return fetch(`${this._baseUrl}/cards/${id}`, {
+        return this._request(`/cards/${id}`, {
             method: 'DELETE',
             headers: {
                 authorization: this._headers.authorization,
                 'Content-Type': 'application/json'
             }
         })
-        .then(this._checkResponse)
     }
 
     getUserInfo() {
-        return fetch(`${this._baseUrl}/users/me`, {headers: this._headers})
-        .then(this._checkResponse)
+        return this._request('/users/me', {headers: this._headers})
     }
 
     patchUserInfo({name, about}) {
-        return fetch(`${this._baseUrl}/users/me`, {
+        return this._request('/users/me', {
             method: 'PATCH',
             headers: {
                 authorization: this._headers.authorization,
@@ -95,7 +93,6 @@ class Api {
                 about: about
             })
         })
-        .then(this._checkResponse)
     }
 }
 

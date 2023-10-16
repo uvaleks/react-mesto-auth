@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InfoTooltip from './InfoTooltip';
 
-function Register({ onRegister, authTitle, authButtonText, setUserOnSignupScreeen, message, setMessage }) {
-  const [isErrorTooltipOpen, setErrorTooltipOpen] = useState(false);
+function Register({ onRegister, authTitle, authButtonText, setUserOnSignupScreeen, message, setMessage, isErrorTooltipOpen, setErrorTooltipOpen }) {
   const [isOkTooltipOpen, setOkTooltipOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,17 +17,12 @@ function Register({ onRegister, authTitle, authButtonText, setUserOnSignupScreee
     e.preventDefault();
     
     onRegister(password, email)
-      .then(res => {return res})
       .then((res) => {
-        if (res.error) {
-          setMessage(res.error);
-          setErrorTooltipOpen(true);
-        } else {
+        if (res) {
           resetForm();
           setOkTooltipOpen(true);
         }
       })
-      .catch((err) => console.log(err))
   };
 
   const handleCloseOkTooltip = () => {

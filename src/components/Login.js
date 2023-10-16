@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InfoTooltip from './InfoTooltip';
 
-function Login({ onLogin, authTitle, authButtonText, message, isErrorTooltipOpen, setErrorTooltipOpen }) {
+function Login({ onLogin, authTitle, authButtonText, message, setMessage, isErrorTooltipOpen, setErrorTooltipOpen }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -19,7 +19,6 @@ function Login({ onLogin, authTitle, authButtonText, message, isErrorTooltipOpen
           resetForm();
           navigate('/cards');
         })
-      .catch((err) => console.log(err))
   }
 
   const handleCloseErrorTooltip = () => {

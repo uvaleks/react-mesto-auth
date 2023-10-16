@@ -2,8 +2,14 @@ import okTooltipStatus from '../images/ok-tooltip-status.svg';
 import errorTooltipStatus from '../images/error-tooltip-status.svg';
 
 function InfoTooltip({ tooltipStatus, isOpen, onClose, message }) {
+  const handleBgClick = (e) => {
+    if (e.target.classList.contains('popup')) {
+      onClose();
+    }
+  }
+
   return (
-    <div className={`popup ${isOpen ? 'popup_opened' : ''}`}>
+    <div onClick={handleBgClick} className={`popup ${isOpen ? 'popup_opened' : ''}`}>
           <div className="tooltip">
               <img className="tooltip__status-icon" src={(tooltipStatus === 'ok') ? okTooltipStatus : errorTooltipStatus} />
               <h2 className="tooltip__title">{(tooltipStatus === 'ok') ? "Вы успешно зарегистрировались!" : ((message) ? message : 'Что-то пошло не так! Попробуйте ещё раз.')}</h2>

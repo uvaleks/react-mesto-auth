@@ -1,10 +1,10 @@
-import * as auth from '../auth';
+import * as auth from '../utils/auth';
+import api from '../utils/api';
 import Header from './Header';
 import Register from './Register';
 import Login from './Login';
 import Main from './Main';
 import Footer from './Footer';
-import api from '../utils/api';
 import { useState, useEffect } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { CardsContext } from '../contexts/CardsContext';
@@ -23,6 +23,8 @@ function App() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [isUserOnSignupScreeen, setUserOnSignupScreeen] = useState(false);
     const [userEmail, setUserEmail] = useState(null);
+    const [message, setMessage] = useState('');
+    const [isErrorTooltipOpen, setErrorTooltipOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -90,7 +92,7 @@ function App() {
     function handleUpdateAvatar(link) {
         api.patchAvatar(link)
         .then((res) => {
-            setCurrentUser({avatar: res.avatar});
+            setCurrentUser(res);
             closeAllPopups();
         })
         .catch((error) => {
@@ -108,7 +110,7 @@ function App() {
             console.log("Adding card error:", error);
         })
     }
- 
+
     function closeAllPopups() {
         setEditProfileOpen(false)
         setAddPlaceOpne(false)
@@ -128,6 +130,7 @@ function App() {
                 setUserEmail(res.data.email);
             }
           })
+          .catch((err) => console.log(err))
       };
     
       useEffect(() => {
@@ -142,29 +145,47 @@ function App() {
         if (loggedIn) {navigate('/cards')};
       }, [loggedIn]);
 
-      const [message, setMessage] = useState('');
-      const [isErrorTooltipOpen, setErrorTooltipOpen] = useState(false);
+      useEffect(() => {
+        if (message) {
+            setErrorTooltipOpen(true)
+        };
+      }, [message]);
+
+      useEffect(() => {
+        if (!isErrorTooltipOpen) {
+            setMessage('');
+        };
+      }, [isErrorTooltipOpen]);
 
       const onRegister = (password, email) => {
-        return auth.register(password, email).then((res) => {
-            if (!res || res.statusCode === 400) setMessage('Что-то пошло не так');
+        return auth.register(password, email)
+        .then((res) => {
           return res;
-        });
+        })
+        .catch((err) => {
+            if (err === 'Ошибка 400') {
+              setMessage('Пользователь с таким email уже существует')
+            } else {
+            console.log(err)
+            }
+        })
       };
     
       const onLogin = (password, email) => {
-        return auth.authorize(email, password).then((res) => {
-            if (res) {
-                if (res.token) {
-                    setLoggedIn(true);
-                    localStorage.setItem('jwt', res.token);
-                }
-                if (res.message) {
-                    setMessage(res.message);
-                    setErrorTooltipOpen(true)
-                }
+        return auth.authorize(email, password)
+        .then((res) => {
+            if (res.token) {
+                setLoggedIn(true);
+                localStorage.setItem('jwt', res.token);
             }
-        });
+        })
+        .catch((err) => {
+            if (err === 'Ошибка 401') {
+              setMessage('Неверный email или пароль')
+            } else {
+            console.log(err)
+            }
+        })
       };
 
       const onSignOut = () => {
@@ -195,6 +216,8 @@ function App() {
                                     setUserOnSignupScreeen={setUserOnSignupScreeen}
                                     message={message}
                                     setMessage={setMessage}
+                                    isErrorTooltipOpen={isErrorTooltipOpen}
+                                    setErrorTooltipOpen={setErrorTooltipOpen}
                                 />
                             }/>
                             <Route path='/signin' element={
@@ -203,6 +226,7 @@ function App() {
                                     authTitle={"Вход"}
                                     authButtonText={"Войти"}
                                     message={message}
+                                    setMessage={setMessage}
                                     isErrorTooltipOpen={isErrorTooltipOpen}
                                     setErrorTooltipOpen={setErrorTooltipOpen}
                                 />

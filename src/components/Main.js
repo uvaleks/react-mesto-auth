@@ -23,7 +23,7 @@ function Main({
     isAddPlacePopupOpen,
     onAddCard,
     onClose
-  }) {
+    }) {
   
   const currentUser = React.useContext(CurrentUserContext);
 
