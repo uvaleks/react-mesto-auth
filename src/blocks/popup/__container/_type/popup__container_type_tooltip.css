@@ -1,4 +1,4 @@
-.tooltip {
+.popup__container_type_tooltip {
     display: flex;
     flex-direction: column;
     gap: 32px;
@@ -15,13 +15,13 @@
 }
 
 @media screen and (max-width: 615px) {
-    .tooltip {
+    .popup__container_type_tooltip {
         max-width: 100%;
     }   
 }
 
 @media screen and (max-width: 425px) {
-    .tooltip {
+    .popup__container_type_tooltip {
         padding: 50px 18px;
         gap: 40px;
     }   

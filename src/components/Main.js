@@ -22,6 +22,7 @@ function Main({
     onUpdateAvatar,
     isAddPlacePopupOpen,
     onAddCard,
+    isImagePopupOpen,
     onClose
     }) {
   

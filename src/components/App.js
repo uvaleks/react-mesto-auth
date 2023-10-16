@@ -19,6 +19,7 @@ function App() {
     const [isEditProfilePopupOpen, setEditProfileOpen] = useState(false);
     const [isAddPlacePopupOpen, setAddPlaceOpne] = useState(false);
     const [isEditAvatarPopupOpen, setEditAvatarOpen] = useState(false);
+    const [isImagePopupOpen, setImagePopupOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [loggedIn, setLoggedIn] = useState(false);
     const [isUserOnSignupScreeen, setUserOnSignupScreeen] = useState(false);
@@ -115,6 +116,7 @@ function App() {
         setEditProfileOpen(false)
         setAddPlaceOpne(false)
         setEditAvatarOpen(false)
+        setImagePopupOpen(false)
         setSelectedCard(null)
     }
 
