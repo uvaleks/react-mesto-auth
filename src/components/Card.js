@@ -1,4 +1,9 @@
-function Card({ name, link, likes, card, onCardClick, onCardLike, onCardDelete, currentUser }) {
+import React from 'react';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+
+function Card({ name, link, likes, card, onCardClick, onCardLike, onCardDelete }) {
+    const currentUser = React.useContext(CurrentUserContext);
+
     function handleClick() {
         onCardClick(card);
     }

@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import InfoTooltip from './InfoTooltip';
 
-function Login({ onLogin, authTitle, authButtonText, message, setMessage, isErrorTooltipOpen, setErrorTooltipOpen }) {
+function Login({ onLogin, authTitle, authButtonText }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -19,10 +18,6 @@ function Login({ onLogin, authTitle, authButtonText, message, setMessage, isErro
           resetForm();
           navigate('/cards');
         })
-  }
-
-  const handleCloseErrorTooltip = () => {
-    setErrorTooltipOpen(false);
   }
 
   return (
@@ -55,12 +50,6 @@ function Login({ onLogin, authTitle, authButtonText, message, setMessage, isErro
               <button className="auth__submit-button" type="submit">{authButtonText}</button>
             </form>
           </div>
-          <InfoTooltip 
-            tooltipStatus={"error"}
-            isOpen={isErrorTooltipOpen}
-            onClose={handleCloseErrorTooltip}
-            message={message}
-          />
     </div>
   );
 }

@@ -6,8 +6,8 @@ function InfoTooltip({ tooltipStatus, isOpen, onClose, message }) {
 
   return (
     <Popup isOpen={isOpen} name={'tooltip'} onClose={onClose}>
-          <img className="tooltip__status-icon" src={(tooltipStatus === 'ok') ? okTooltipStatus : errorTooltipStatus} />
-          <h2 className="tooltip__title">{(tooltipStatus === 'ok') ? "Вы успешно зарегистрировались!" : ((message) ? message : 'Что-то пошло не так! Попробуйте ещё раз.')}</h2>
+          <img className="tooltip__status-icon" src={(tooltipStatus === 'Ok') ? okTooltipStatus : errorTooltipStatus} alt={tooltipStatus} />
+          <h2 className="tooltip__title">{(tooltipStatus === 'Ok') ? "Вы успешно зарегистрировались!" : ((message) ? message : 'Что-то пошло не так! Попробуйте ещё раз.')}</h2>
     </Popup>
   );
 }

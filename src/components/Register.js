@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import InfoTooltip from './InfoTooltip';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-function Register({ onRegister, authTitle, authButtonText, setUserOnSignupScreeen, message, setMessage, isErrorTooltipOpen, setErrorTooltipOpen }) {
-  const [isOkTooltipOpen, setOkTooltipOpen] = useState(false);
+function Register({ onRegister, authTitle, authButtonText, setUserOnSignupScreeen, setOkTooltipOpen }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -24,15 +22,6 @@ function Register({ onRegister, authTitle, authButtonText, setUserOnSignupScreee
         }
       })
   };
-
-  const handleCloseOkTooltip = () => {
-    setOkTooltipOpen(false);
-    setUserOnSignupScreeen(false);
-  }
-
-  const handleCloseErrorTooltip = () => {
-    setErrorTooltipOpen(false);
-  }
 
   const handleSwitchToSigninClick = () => {
     navigate('/signin');
@@ -70,20 +59,9 @@ function Register({ onRegister, authTitle, authButtonText, setUserOnSignupScreee
             </form>
             <div className="auth__signin-hint-container">
                 <p className="auth__signin-hint">Уже зарегистрированы?</p>
-                <a onClick={handleSwitchToSigninClick} className="auth__signin-link">Войти</a>
+                <Link onClick={handleSwitchToSigninClick} className="auth__signin-link">Войти</Link>
             </div>
           </div>
-          <InfoTooltip
-            tooltipStatus={"ok"}
-            isOpen={isOkTooltipOpen}
-            onClose={handleCloseOkTooltip}
-          />
-          <InfoTooltip 
-            tooltipStatus={"error"}
-            isOpen={isErrorTooltipOpen}
-            onClose={handleCloseErrorTooltip}
-            message={message}
-          />
     </div>
   );
 }

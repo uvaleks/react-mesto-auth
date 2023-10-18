@@ -5,7 +5,14 @@ import Register from './Register';
 import Login from './Login';
 import Main from './Main';
 import Footer from './Footer';
+import PopupWithForm from './PopupWithForm';
+import ImagePopup from './ImagePopup';
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
+import InfoTooltip from './InfoTooltip';
 import { useState, useEffect } from 'react';
+import { AppContext } from '../contexts/AppContext';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { CardsContext } from '../contexts/CardsContext';
 import ProtectedRoute from './ProtectedRoute';
@@ -20,96 +27,76 @@ function App() {
     const [isAddPlacePopupOpen, setAddPlaceOpne] = useState(false);
     const [isEditAvatarPopupOpen, setEditAvatarOpen] = useState(false);
     const [isImagePopupOpen, setImagePopupOpen] = useState(false);
+    const [isOkTooltipOpen, setOkTooltipOpen] = useState(false);
+    const [isErrorTooltipOpen, setErrorTooltipOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [loggedIn, setLoggedIn] = useState(false);
     const [isUserOnSignupScreeen, setUserOnSignupScreeen] = useState(false);
     const [userEmail, setUserEmail] = useState(null);
     const [message, setMessage] = useState('');
-    const [isErrorTooltipOpen, setErrorTooltipOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-          try {
-            const userInfo = await api.getUserInfo();
-            setCurrentUser(userInfo);
-          } catch (error) {
-            console.log("Error fetching user data:", error);
-          }
-        };
+
     
-        fetchUserInfo();
+    useEffect(() => {
+      api.getUserInfo().then(setCurrentUser).catch(console.error);
     }, []);
 
     useEffect(() => {
-      const fetchCards = async () => {
-        try {
-          const response = await api.getCards();
-          setCards(response);
-        } catch (error) {
-          console.log("Error fetching cards:", error);
-        }
-      };
-  
-      fetchCards();
+      api.getCards().then(setCards).catch(console.error);
     }, []);
 
-    async function handleCardLike(card) {
+
+    function handleCardLike(card) {
         const isLiked = card.likes.some(i => i._id === currentUser._id);
     
-        try {
-            const newCard = await api.changeLikeCardStatus(card._id, !isLiked);
+        api.changeLikeCardStatus(card._id, !isLiked)
+        .then(newCard => {
             setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-        } catch (error) {
-            console.log("Like card error:", error);
-        }
+        })
+        .catch(console.error);
     }
 
-    async function handleCardDelete(card) {
-        try {
-            const response = await api.deleteCard(card._id);
-            if (response.message === 'Пост удалён') {
-                const newCards = cards.filter(function (item) {
-                    return item._id !== card._id;
-                  })
-                setCards(newCards);
-            }
-        } catch (error) {
-            console.log("Deleting card error:", error);
-        }
+    function handleCardDelete(card) {
+        api.deleteCard(card._id)
+        .then(response => {
+          if (response.message === 'Пост удалён') {
+            setCards((state) => state.filter((item) => item._id !== card._id));
+          }
+        })
+        .catch(console.error);
+    }
+  
+    // COMMON
+
+    function handleSubmit(request) {
+      setIsLoading(true);
+      request()
+        .then(closeAllPopups)
+        .catch(console.error)
+        .finally(() => setIsLoading(false));
     }
 
     function handleUpdateUser({name, about}) {
-        api.patchUserInfo({name, about})
-        .then((res) => {
-            setCurrentUser(res);
-            closeAllPopups();
-        })
-        .catch((error) => {
-            console.log("Updating user info error:", error);
-        })
+      function makeRequest() {
+        return api.patchUserInfo({ name, about }).then(setCurrentUser);
+      }
+      handleSubmit(makeRequest);
     }
 
     function handleUpdateAvatar(link) {
-        api.patchAvatar(link)
-        .then((res) => {
-            setCurrentUser(res);
-            closeAllPopups();
-        })
-        .catch((error) => {
-            console.log("Updating avatar error:", error);
-        })
+      function makeRequest() {
+        return api.patchAvatar(link).then(setCurrentUser);
+      }
+      handleSubmit(makeRequest);
     }
 
     function handleAddCard(name, link) {
-        api.postCard({name, link})
-        .then((newCard) => {
-            setCards([newCard, ...cards]); 
-            closeAllPopups();
-        })
-        .catch((error) => {
-            console.log("Adding card error:", error);
-        })
+      function makeRequest() {
+        return api.postCard({name, link}).then((newCard) => {setCards([newCard, ...cards])});
+      }
+      handleSubmit(makeRequest);
     }
 
     function closeAllPopups() {
@@ -198,64 +185,91 @@ function App() {
             }
       };
 
+      const handleCloseErrorTooltip = () => {
+        setErrorTooltipOpen(false);
+      }
+
+      const handleCloseOkTooltip = () => {
+        setOkTooltipOpen(false);
+        setUserOnSignupScreeen(false);
+      }
+
     return (
-            <CurrentUserContext.Provider value={currentUser}>
-                <CardsContext.Provider value={cards}>
-                    <div className="page">
-                        <Header
-                            loggedIn={loggedIn}
-                            isUserOnSignupScreeen={isUserOnSignupScreeen}
-                            setUserOnSignupScreeen={setUserOnSignupScreeen}
-                            userEmail={userEmail}
-                            onSignOut={onSignOut}
-                        />
-                        <Routes>
-                            <Route path='/signup' element={
-                                <Register
-                                    onRegister={onRegister}
-                                    authTitle={"Регистрация"}
-                                    authButtonText={"Зарегистрироваться"}
-                                    setUserOnSignupScreeen={setUserOnSignupScreeen}
-                                    message={message}
-                                    setMessage={setMessage}
-                                    isErrorTooltipOpen={isErrorTooltipOpen}
-                                    setErrorTooltipOpen={setErrorTooltipOpen}
-                                />
-                            }/>
-                            <Route path='/signin' element={
-                                <Login
-                                    onLogin={onLogin}
-                                    authTitle={"Вход"}
-                                    authButtonText={"Войти"}
-                                    message={message}
-                                    setMessage={setMessage}
-                                    isErrorTooltipOpen={isErrorTooltipOpen}
-                                    setErrorTooltipOpen={setErrorTooltipOpen}
-                                />
-                            }/>
-                            <Route path='/cards' element={<ProtectedRoute loggedIn={loggedIn} component={Main} onEditProfile={() => setEditProfileOpen(true)}
-                                    onAddPlace={() => setAddPlaceOpne(true)}
-                                    onEditAvatar={() => setEditAvatarOpen(true)}
-                                    closeAllPopups={closeAllPopups}
-                                    cards={cards}
-                                    selectedCard={selectedCard}
-                                    onCardClick={handleCardClick}
-                                    onCardLike={handleCardLike}
-                                    onCardDelete={handleCardDelete}
-                                    isEditProfilePopupOpen={isEditProfilePopupOpen}
-                                    onUpdateUser={handleUpdateUser}
-                                    isEditAvatarPopupOpen={isEditAvatarPopupOpen}
-                                    onUpdateAvatar={handleUpdateAvatar}
-                                    isAddPlacePopupOpen={isAddPlacePopupOpen}
-                                    onAddCard={handleAddCard}
-                                    onClose={closeAllPopups}
-                                    />} />  
-                            <Route path="*" element={loggedIn ? <Navigate to="/cards" /> : <Navigate to="/signin" />}/>
-                        </Routes>
-                        <Footer />
-                    </div>
-                </CardsContext.Provider>
-            </CurrentUserContext.Provider>
+      <AppContext.Provider value={{ isLoading, closeAllPopups }}>
+        <CurrentUserContext.Provider value={currentUser}>
+          <CardsContext.Provider value={cards}>
+            <div className="page">
+              <Header
+                loggedIn={loggedIn}
+                isUserOnSignupScreeen={isUserOnSignupScreeen}
+                setUserOnSignupScreeen={setUserOnSignupScreeen}
+                userEmail={userEmail}
+                onSignOut={onSignOut}
+              />
+              <Routes>
+                <Route path='/signup' element={
+                  <Register
+                    onRegister={onRegister}
+                    authTitle={"Регистрация"}
+                    authButtonText={"Зарегистрироваться"}
+                    setUserOnSignupScreeen={setUserOnSignupScreeen}
+                    setOkTooltipOpen={setOkTooltipOpen}
+                  />
+                }/>
+                <Route path='/signin' element={
+                  <Login
+                    onLogin={onLogin}
+                    authTitle={"Вход"}
+                    authButtonText={"Войти"}
+                  />
+                }/>
+                <Route path='/cards' element={<ProtectedRoute loggedIn={loggedIn} component={Main} onEditProfile={() => setEditProfileOpen(true)}
+                  onAddPlace={() => setAddPlaceOpne(true)}
+                  onEditAvatar={() => setEditAvatarOpen(true)}
+                  closeAllPopups={closeAllPopups}
+                  cards={cards}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
+                />} />  
+                <Route path="*" element={loggedIn ? <Navigate to="/cards" /> : <Navigate to="/signin" />}/>
+              </Routes>
+              <Footer />
+              <EditProfilePopup
+                isOpen={isEditProfilePopupOpen}
+                onUpdateUser={handleUpdateUser}
+              />
+              <EditAvatarPopup
+                isOpen={isEditAvatarPopupOpen}
+                onUpdateAvatar={handleUpdateAvatar}
+              />
+              <AddPlacePopup
+                isOpen={isAddPlacePopupOpen}
+                onAddCard={handleAddCard}
+              />
+              <PopupWithForm
+                popupName={'confirm-delete'}
+                title={"Вы уверены?"}
+                buttonText={"Да"}
+              />
+              <ImagePopup
+                card={selectedCard}
+              />
+              <InfoTooltip
+                tooltipStatus={"Ok"}
+                isOpen={isOkTooltipOpen}
+                onClose={handleCloseOkTooltip}
+              />
+              <InfoTooltip 
+                tooltipStatus={"Error"}
+                isOpen={isErrorTooltipOpen}
+                onClose={handleCloseErrorTooltip}
+                message={message}
+              />
+            </div>
+          </CardsContext.Provider>
+        </CurrentUserContext.Provider>
+      </AppContext.Provider>
   );
 }
 
