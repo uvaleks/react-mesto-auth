@@ -16,7 +16,7 @@ function Login({ onLogin, authTitle, authButtonText }) {
     onLogin(password, email)
       .then(() => {
           resetForm();
-          navigate('/cards');
+          navigate('/main');
         })
   }
 

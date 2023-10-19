@@ -131,7 +131,7 @@ function App() {
       }, [loggedIn]);
     
       useEffect(() => {
-        if (loggedIn) {navigate('/cards')};
+        if (loggedIn) {navigate('/main')};
       }, [loggedIn]);
 
       useEffect(() => {
@@ -223,7 +223,7 @@ function App() {
                     authButtonText={"Войти"}
                   />
                 }/>
-                <Route path='/cards' element={<ProtectedRoute loggedIn={loggedIn} component={Main} onEditProfile={() => setEditProfileOpen(true)}
+                <Route path='/main' element={<ProtectedRoute loggedIn={loggedIn} component={Main} onEditProfile={() => setEditProfileOpen(true)}
                   onAddPlace={() => setAddPlaceOpne(true)}
                   onEditAvatar={() => setEditAvatarOpen(true)}
                   closeAllPopups={closeAllPopups}
@@ -232,7 +232,7 @@ function App() {
                   onCardLike={handleCardLike}
                   onCardDelete={handleCardDelete}
                 />} />  
-                <Route path="*" element={loggedIn ? <Navigate to="/cards" /> : <Navigate to="/signin" />}/>
+                <Route path="*" element={loggedIn ? <Navigate to="/main" /> : <Navigate to="/signin" />}/>
               </Routes>
               <Footer />
               <EditProfilePopup
